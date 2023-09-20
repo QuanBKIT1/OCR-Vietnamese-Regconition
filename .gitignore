@@ -1,0 +1,5 @@
+Handwritten OCR/
+checkpoint/
+model/
+**/__pycache__/
+**/.venv
