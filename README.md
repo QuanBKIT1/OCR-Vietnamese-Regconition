@@ -39,13 +39,35 @@ $$ CER = \frac{S+D+I}{N} $$
 
 ## Data Preprocessing
 
-Image convert to **grayscale color**, resized image to `(WIDTH, HEIGHT) = (100,32)`.
+Image convert to **grayscale color**, resized image to `(HEIGHT, WIDTH) = (32,100)`.
 
 ## Model
 
 The model as built is a hybrid of Shi et al.'s CRNN architecture ([arXiv:1507.0571](https://arxiv.org/abs/1507.05717)) and the VGG deep convnet, which reduces the number of parameters by stacking pairs of small 3x3 kernels. In addition, the pooling is also limited in the horizontal direction to preserve resolution for character recognition. There must be at least one horizontal element per character.
 
-## Visualize result
+Starts with  $32 \times 100$ image, the dimensions at each level of filtering are as follows:
+
+| Layer | Op   | KrnSz | Stride(v,h) | OutDim | H   | W   | PadOpt |
+| :---: | ---- | ----- | :---------: | ------ | --- | --- | ------ |
+|   1   | Conv | 3     |      1      | 64     | 30  | 98  | valid  |
+|   2   | Conv | 3     |      1      | 64     | 30  | 98  | same   |
+|       | Pool | 2     |      2      | 64     | 15  | 49  |
+|   3   | Conv | 3     |      1      | 128    | 15  | 49  | same   |
+|   4   | Conv | 3     |      1      | 128    | 15  | 49  | same   |
+|       | Pool | 2     |     2,1     | 128    | 7   | 48  |
+|   5   | Conv | 3     |      1      | 256    | 7   | 48  | same   |
+|   6   | Conv | 3     |      1      | 256    | 7   | 48  | same   |
+|       | Pool | 2     |     2,1     | 256    | 3   | 47  |
+|   7   | Conv | 3     |      1      | 512    | 3   | 47  | same   |
+|   8   | Conv | 3     |      1      | 512    | 3   | 47  | same   |
+|       | Pool | 3     |     3,1     | 512    | 1   | 45  |
+|   9   | LSTM |       |             | 512    |     |     |
+|  10   | LSTM |       |             | 512    |     |     |
+
+## Result
+
+Proposed model is evaluated on the Vietnamese Handwritten Text Dataset, obtained a CER of **7.91%**.
+
 
 ## Running on docker
 
@@ -67,8 +89,31 @@ python './src/predict.py'
 
 The result are saved to file `'/app/'prediction.txt`
 
+### Web demo
+
+- Download library and model checkpoint:
+
+```bash
+pip install -r requirements.txt
+```
+
+
+- Run following command and access `http://localhost:8501/` to demo:
+
+```
+streamlit run run.py
+```
+
+![alt text](./visualize/demo_web.png)
+
+
+## Dataset and checkpoints
+
+---------- Update ----------
+
+
 ## Future work
 
 - Implement paper Robust Scene Text Recognition with Automatic Rectification ([RARE](https://arxiv.org/abs/1603.03915)) to address irregular text. RARE is a specially designed deep neural network, which consists of a Spatial Transformer Network (STN) and a Sequence Recognition Network (SRN).
 
-- Try SOTA model like **Vision Transformer** (ViT), **Swin Transformer**,...  
+- Try SOTA model like **Vision Transformer** (ViT), **Swin Transformer**,...

@@ -28,8 +28,7 @@ if st.button("Chuyển"):
             input_dim=(HEIGHT, WIDTH, 1),
             output_dim=len(VOCAB),
         )
-        model.load_weights('./checkpoints/cp.ckpt')
-        print(image_file)
+        model.load_weights('./checkpoints/checkpoint.weights.h5')
         with st.spinner('Đang trích xuất thông tin từ ảnh'):
             text = predict(model, image_file)[0]
         st.subheader('Từ đã được trích xuất ...')
