@@ -3,3 +3,5 @@ checkpoint/
 model/
 **/__pycache__/
 **/.venv
+
+test.ipynb

@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.metrics import Metric
-
+from configs import BATCH_SIZE
 class CWERMetric(tf.keras.metrics.Metric):
     """A custom TensorFlow metric to compute the Character Error Rate (CER).
     
@@ -55,7 +55,9 @@ class CWERMetric(tf.keras.metrics.Metric):
         self.cer_accumulator.assign_add(tf.reduce_sum(distance))
         
         # Increment the batch_counter by the batch size
-        self.batch_counter.assign_add(len(y_true))
+        # print("y_true: ", y_true)
+
+        self.batch_counter.assign_add(BATCH_SIZE)
 
         # Calculate the number of wrong words in batch and add to wer_accumulator variable
         self.wer_accumulator.assign_add(tf.reduce_sum(tf.cast(tf.not_equal(distance, 0), tf.float32)))

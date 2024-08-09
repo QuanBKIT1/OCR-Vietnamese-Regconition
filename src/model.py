@@ -2,6 +2,15 @@ import tensorflow as tf
 import keras
 from keras.layers import Lambda, Input, Conv2D, MaxPooling2D, BatchNormalization, Bidirectional, Dense, LSTM
 
+class Squeeze(keras.layers.Layer):
+    def __init__(self, axis=1):
+        super().__init__()
+        self.axis = axis
+
+
+    def call(self, inputs):
+        return tf.squeeze(inputs, self.axis, name='squeeze_layer')
+
 def construct_model(input_dim, output_dim, activation="leaky_relu"):
 
     inputs = Input(shape=input_dim, name="input")
@@ -26,7 +35,8 @@ def construct_model(input_dim, output_dim, activation="leaky_relu"):
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=(3,3), strides=(3,1))(x)
 
-    squeezed = tf.squeeze(x, axis=1, name='features')
+    squeezed = Squeeze(axis=1)(x)
+    # squeezed = tf.squeeze(x, axis=1, name='squeeze_layer')
 
     blstm1 = Bidirectional(LSTM(512, return_sequences=True))(squeezed)
     blstm2 = Bidirectional(LSTM(512, return_sequences=True))(blstm1)

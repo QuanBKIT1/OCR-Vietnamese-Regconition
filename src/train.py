@@ -8,6 +8,7 @@ from model import construct_model
 from loss import CTCloss
 from metric import CWERMetric
 
+
 def train():
     # Download data
     download_dataset()
@@ -46,7 +47,7 @@ def train():
 
     # Define callback
     earlystopper = EarlyStopping(monitor="val_CER", patience=10, verbose=1)
-    checkpoint = ModelCheckpoint(filepath='../../../checkpoint',
+    checkpoint = ModelCheckpoint(filepath='../checkpoint.weights.h5',
                                  monitor="val_CER",
                                  save_best_only=True,
                                  save_weights_only=True,

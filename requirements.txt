@@ -1,3 +1,4 @@
 tensorflow
 gdown
 opencv-python
+streamlit
